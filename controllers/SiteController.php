@@ -21,7 +21,7 @@ class SiteController extends Controller
         $behaviors['corsFilter'] = [
         'class' => \yii\filters\Cors::class,
             'cors' => [
-                'Origin' => ['*'],
+                'Access-Control-Allow-Origin' => ['*'],
                 'Access-Control-Request-Method' => ['POST', 'PUT', 'OPTIONS', 'GET', 'DELETE'],
                 'Access-Control-Allow-Credentials' => true,
                 'Access-Control-Request-Headers' => ['*'],
@@ -30,26 +30,13 @@ class SiteController extends Controller
                 'Access-Control-Expose-Headers' => ['*'],
             ],
         ];
-        unset($behaviors['authenticator']);
-        $behaviors['authenticator'] = [
-            'class' =>  \yii\filters\auth\HttpBearerAuth::class,
-        ];
-        $behaviors['access'] = [
-            'class' => \yii\filters\AccessControl::class,
-            'rules' => [                
-                [
-                    'allow' => true,
-                    'roles' => ['@'],
-                ],
-            ],
-        ];
         return $behaviors;
     }
     protected function verbs()
     {
        return [
-           'signup' => ['POST'],
-           'login' => ['POST'],
+           'signup' => ['POST','OPTIONS'],
+           'login' => ['POST','OPTIONS'],
        ];
     }
 
@@ -136,11 +123,11 @@ class SiteController extends Controller
             if(isset($params['consumer'])) $user->consumer = $params['consumer'];
             if(isset($params['access_given'])) $user->access_given = $params['access_given'];
 
-            Yii::$app->response->statusCode = Status::STATUS_FOUND;
+            Yii::$app->response->statusCode = Status::STATUS_OK;
             $user->generateAuthKey();
             $user->save();
             return [
-                'status' => Status::STATUS_FOUND,
+                'status' => Status::STATUS_OK,
                 'message' => 'Login Succeed, save your token',
                 'data' => [
                     'id' => $user->username,
