@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'useHttpBasicAuth' => true,
+    // 'useHttpBasicAuth' => true,
     'useHttpBearerAuth' => true,
-    'useQueryParamAuth' => true,
+    // 'useQueryParamAuth' => true,
 
     /**
      * use rate limiter for user

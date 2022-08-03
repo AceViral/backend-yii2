@@ -2,18 +2,14 @@
 
 namespace app\modules\v1\controllers;
 
-use app\helpers\BehaviorsFromParamsHelper;
+use app\helpers\AuthMethodsFromParamsHelper;
 use yii\rest\ActiveController;
+use yii\filters\auth\CompositeAuth;
 
 class NoteController extends ActiveController
 {
     public $modelClass = 'app\models\Note';
 
-    public function beforeAction($action){
-        $this->enableCsrfValidation = false;
-        return parent::beforeAction($action);
-    }
-   
     public function behaviors(){
         $behaviors = parent::behaviors();
         $behaviors['corsFilter'] = [
@@ -23,10 +19,14 @@ class NoteController extends ActiveController
                 'Access-Control-Request-Method' => ['POST', 'PUT', 'OPTIONS', 'GET', 'DELETE'],
                 'Access-Control-Allow-Credentials' => true,
                 'Access-Control-Request-Headers' => ['*'],
-                'Access-Control-Allow-Headers' => ['Authorization','Content-Type'],
+                'Access-Control-Allow-Headers' => ['Authorization'],
                 'Access-Control-Max-Age' => 3600,
                 'Access-Control-Expose-Headers' => ['*'],
             ],
+        ];
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::class,
+            'authMethods' => AuthMethodsFromParamsHelper::authMethods(),
         ];
         return $behaviors;
     }
@@ -35,7 +35,7 @@ class NoteController extends ActiveController
     {
        return [
            'note' => ['POST', 'PUT', 'OPTIONS', 'GET', 'DELETE'],
-           'note/create' => ['POST', 'PUT', 'OPTIONS', 'GET', 'DELETE'],
+        //    'note/create' => ['POST', 'PUT', 'OPTIONS', 'GET', 'DELETE'],
        ];
     }
 }
